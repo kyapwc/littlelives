@@ -9,7 +9,7 @@ I started the project in Javascript and by the time I finished it at 7:20PM (I c
 
 > [!CAUTION]
 > Have managed to convert the project to typescript (took around 1 and a half hours), can disregard above.
-> However, only converted the project to typescript after 7:30pm. Please check commit history to see when the project was finished.
+> However, only converted the project to typescript after 8:30pm due to going out for dinner. Please check commit history to see when the project was finished.
 
 Database used is `postgresql`, the reason for this is mostly due to my familiarity of using postgres as opposed to MongoDB / mysql as I've been using Postgresql for more than 5 years and mysql is 3 years and MongoDB is at 2 years. Furthermore, the reason for a sql database as opposed to a noSQL database is due to the structure of the data having to be quite defined and not suited for a noSQL database.
 
