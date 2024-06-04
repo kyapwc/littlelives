@@ -9,6 +9,8 @@ I started the project in Javascript and by the time I finished it at 7:20PM (I c
 
 Database used is `postgresql`, the reason for this is mostly due to my familiarity of using postgres as opposed to MongoDB / mysql as I've been using Postgresql for more than 5 years and mysql is 3 years and MongoDB is at 2 years. Furthermore, the reason for a sql database as opposed to a noSQL database is due to the structure of the data having to be quite defined and not suited for a noSQL database.
 
+Database design is as shown in this [dbdiagram.io diagram](https://dbdiagram.io/d/LittleLives-665efcc6b65d933879769bc7)
+
 ## Thoughts
 ### The API
 - POST `/users/register`
