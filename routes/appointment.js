@@ -2,12 +2,13 @@ const router = require('express').Router()
 const { Op } = require('sequelize')
 const uuid = require('uuid')
 
-const { Appointments, UserAppointments } = require('../models')
+const { Appointments, UserAppointments, db } = require('../models')
 const dayjs = require('../utils/dayjs')
 const { validateAppointment, generateAppointments } = require('../utils')
 const verifyToken = require('../middleware/auth')
 
 router.post('/generate', verifyToken, async (req, res) => {
+  const transaction = await db.transaction()
   try {
     const { body } = req
 
@@ -50,6 +51,7 @@ router.post('/generate', verifyToken, async (req, res) => {
     const appointmentsOnSpecifiedDate = await Appointments.findAll({
       where: { date: formattedDate },
       attributes: ['id'],
+      transaction,
     })
 
     if (appointmentsOnSpecifiedDate?.length > 0) {
@@ -65,7 +67,9 @@ router.post('/generate', verifyToken, async (req, res) => {
       settingsMap,
     )
 
-    const appointments = await Appointments.bulkCreate(newAppointments)
+    const appointments = await Appointments.bulkCreate(newAppointments, { transaction })
+
+    await transaction.commit()
 
     return res.json({
       success: true,
@@ -73,6 +77,7 @@ router.post('/generate', verifyToken, async (req, res) => {
       appointments,
     })
   } catch (error) {
+    await transaction.rollback()
     return res.status(500).json({
       success: true,
       message: `Failed to generate appointments for given date: ${error.message}`,
@@ -82,6 +87,7 @@ router.post('/generate', verifyToken, async (req, res) => {
 
 // should only allow admin to access this route
 router.post('/', verifyToken, async (req, res) => {
+  const transaction = await db.transaction()
   try {
     const data = req.body
 
@@ -135,6 +141,7 @@ router.post('/', verifyToken, async (req, res) => {
     const appointments = await Appointments.findAll({
       where: { date },
       raw: true,
+      transaction,
     })
 
     const appointmentData = {
@@ -157,7 +164,8 @@ router.post('/', verifyToken, async (req, res) => {
       })
     }
 
-    const appointment = await Appointments.create(appointmentData)
+    const appointment = await Appointments.create(appointmentData, { transaction })
+    await transaction.commit()
 
     return res.json({
       success: true,
@@ -165,6 +173,7 @@ router.post('/', verifyToken, async (req, res) => {
       appointment,
     })
   } catch (error) {
+    await transaction.rollback()
     return res.status(500).json({
       success: true,
       message: `Failed to generate appointment for provided data: ${error.message}`,
@@ -202,6 +211,7 @@ router.get('/', verifyToken, async (req, res) => {
 })
 
 router.post('/book', verifyToken, async (req, res) => {
+  const transaction = await db.transaction()
   try {
     const { body } = req
     const { user } = res.locals
@@ -222,6 +232,7 @@ router.post('/book', verifyToken, async (req, res) => {
 
     const userHasAppointment = await UserAppointments.findOne({
       where: { user_id: user.id },
+      transaction,
     })
 
     if (userHasAppointment) {
@@ -238,6 +249,7 @@ router.post('/book', verifyToken, async (req, res) => {
         id: body.appointment_id,
         available_slots: { [Op.gt]: 0 },
       },
+      transaction,
     })
 
     if (!appointment) {
@@ -247,18 +259,20 @@ router.post('/book', verifyToken, async (req, res) => {
       })
     }
 
-    await appointment.decrement('available_slots', 1)
+    await appointment.decrement('available_slots', { by: 1, transaction })
     await UserAppointments.create({
       appointment_id: appointment.id,
       user_id: user.id,
-    })
+    }, { transaction })
 
+    await transaction.commit()
     return res.json({
       success: true,
       message: `Successfully booked appointment`,
       appointment,
     })
   } catch (error) {
+    await transaction.rollback()
     return res.status(500).json({
       success: false,
       message: `Failed to book appointment due to error: ${error.message}`,
@@ -267,11 +281,13 @@ router.post('/book', verifyToken, async (req, res) => {
 })
 
 router.delete('/:id', verifyToken, async (req, res) => {
+  const transaction = await db.transaction()
   try {
     const { id } = req.params
 
     const appointment = await Appointments.findOne({
       where: { id },
+      transaction,
     })
 
     if (!appointment) {
@@ -283,6 +299,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     const userAppointment = await UserAppointments.findOne({
       where: { appointment_id: id, user_id: res.locals.user.id },
+      transaction,
     })
 
     if (!userAppointment) {
@@ -292,15 +309,16 @@ router.delete('/:id', verifyToken, async (req, res) => {
       })
     }
 
-    await appointment.increment('available_slots', { by: 1 })
-    await userAppointment.destroy()
+    await appointment.increment('available_slots', { by: 1, transaction })
+    await userAppointment.destroy({ transaction })
+    await transaction.commit()
 
     return res.json({
       success: true,
       message: 'Successfully cancelled appointment'
     })
   } catch (error) {
-    console.log('error: ', error)
+    await transaction.destroy()
     return res.status(500).json({
       success: false,
       message: `Failed to cancel appointment due to error: ${error.message}`,
