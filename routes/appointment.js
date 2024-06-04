@@ -288,11 +288,11 @@ router.delete('/:id', verifyToken, async (req, res) => {
     if (!userAppointment) {
       return res.status(401).json({
         success: false,
-        message: 'User does not own this appointment',
+        message: 'User does not have the appointment scheduled',
       })
     }
 
-    await appointment.increment('available_slots', 1)
+    await appointment.increment('available_slots', { by: 1 })
     await userAppointment.destroy()
 
     return res.json({
@@ -300,9 +300,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
       message: 'Successfully cancelled appointment'
     })
   } catch (error) {
+    console.log('error: ', error)
     return res.status(500).json({
       success: false,
-      message: `Failed to book appointment due to error: ${error.message}`,
+      message: `Failed to cancel appointment due to error: ${error.message}`,
     })
   }
 })
