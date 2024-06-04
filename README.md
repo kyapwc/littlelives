@@ -7,6 +7,9 @@ Documentation for the task requirements can be found [here](https://docs.google.
 ## Note:
 I started the project in Javascript and by the time I finished it at 7:20PM (I chose 3:30pm start time and 4 hour timeslot = 7:30pm and wanted to take this time to document the project instead of converting to typescript), I did not have time to convert the project to typescript which is a huge oversight. Apologies on this as I did not read the `Language` specified in the requirements (which is deeply regretable).
 
+> [!CAUTION]
+> Have managed to convert the project to typescript (took around 1 and a half hours), can disregard above (however, only convertted the project to typescript after 7:30pm). Please check commit history to see when the project was finished.
+
 Database used is `postgresql`, the reason for this is mostly due to my familiarity of using postgres as opposed to MongoDB / mysql as I've been using Postgresql for more than 5 years and mysql is 3 years and MongoDB is at 2 years. Furthermore, the reason for a sql database as opposed to a noSQL database is due to the structure of the data having to be quite defined and not suited for a noSQL database.
 
 Database design is as shown in this [dbdiagram.io diagram](https://dbdiagram.io/d/LittleLives-665efcc6b65d933879769bc7)
