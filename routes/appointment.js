@@ -2,7 +2,7 @@ const router = require('express').Router()
 const { Op } = require('sequelize')
 const uuid = require('uuid')
 
-const { Appointments, UserAppointments, Settings } = require('../models')
+const { Appointments, UserAppointments } = require('../models')
 const dayjs = require('../utils/dayjs')
 const { validateAppointment, generateAppointments } = require('../utils')
 const verifyToken = require('../middleware/auth')
