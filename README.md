@@ -34,6 +34,8 @@ Database design is as shown in this [dbdiagram.io diagram](https://dbdiagram.io/
 - POST `/appointments/book`
     - Book the appointment based on appointment_id
     - if user already has appointment in progress, then they cannot book another
+- DELETE `/appointments/:id`
+    - delete appointment and increment the available_slots by 1
 
 **`There should be admin route as well for more security but not enough time to implement it`**
 

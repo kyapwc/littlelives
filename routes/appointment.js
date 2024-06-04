@@ -266,4 +266,45 @@ router.post('/book', verifyToken, async (req, res) => {
   }
 })
 
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const appointment = await Appointments.findOne({
+      where: { id },
+    })
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Appointment not found',
+      })
+    }
+
+    const userAppointment = await UserAppointments.findOne({
+      where: { appointment_id: id, user_id: res.locals.user.id },
+    })
+
+    if (!userAppointment) {
+      return res.status(401).json({
+        success: false,
+        message: 'User does not own this appointment',
+      })
+    }
+
+    await appointment.increment('available_slots', 1)
+    await userAppointment.destroy()
+
+    return res.json({
+      success: true,
+      message: 'Successfully cancelled appointment'
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Failed to book appointment due to error: ${error.message}`,
+    })
+  }
+})
+
 module.exports = router
