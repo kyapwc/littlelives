@@ -1,7 +1,9 @@
 const router = require('express').Router()
 const { Settings } = require('../models')
 
-router.put('/:key', async (req, res) => {
+const verifyToken = require('../middleware/auth')
+
+router.put('/:key', verifyToken, async (req, res) => {
   const { key, value } = req.body
 
   if (!key?.length || !value?.length) {
@@ -31,7 +33,7 @@ router.put('/:key', async (req, res) => {
   })
 })
 
-router.get('/', async (_, res) => {
+router.get('/', verifyToken, async (_, res) => {
   const settings = await Settings.findAll()
 
   return res.json({
