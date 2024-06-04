@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:seed": "sequelize db:seed:all",
     "db:migrate": "sequelize db:migrate",
-    "predev": "npm run db:migrate && npm run db:seed",
+    "predev": "npm run db:migrate",
     "dev": "nodemon index.ts"
   },
   "keywords": [],
