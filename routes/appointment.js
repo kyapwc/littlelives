@@ -62,6 +62,7 @@ router.post('/generate', verifyToken, async (req, res) => {
     const newAppointments = await generateAppointments(
       dayjs(body.date).format('YYYY-MM-DD'),
       availableSlots,
+      settingsMap,
     )
 
     const appointments = await Appointments.bulkCreate(newAppointments)
@@ -99,24 +100,7 @@ router.post('/', verifyToken, async (req, res) => {
     const validSlots = data?.available_slots?.length > 0 && !Number.isNaN(data?.available_slots)
     const available_slots = validSlots ? Number(data?.available_slots) : 0
 
-    const settings = await Settings.findAll({
-      where: {
-        key: [
-          'MAXIMUM_SLOTS_PER_APPOINTMENT',
-          'APPOINTMENT_SLOT_DURATION',
-          'DAYS_OFF',
-        ],
-      },
-    })
-
-    const settingsMap = settings.reduce((acc, curr) => {
-      if (curr.key === 'DAYS_OFF') {
-        acc[curr.key] = JSON.parse(curr.value)
-      } else {
-        acc[curr.key] = curr.value
-      }
-      return acc
-    }, {})
+    const settingsMap = res.locals.settings
 
     if (
       settingsMap?.MAXIMUM_SLOTS_PER_APPOINTMENT &&

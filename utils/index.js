@@ -63,28 +63,13 @@ module.exports.validateAppointment = (newAppointment, index = 0, appointments, s
  * @param {number} availableSlots
  * @returns {AppointmentObj}
  */
-module.exports.generateAppointments = async (date, availableSlots) => {
-  const settings = await Settings.findAll({
-    where: {
-      key: [
-        'OPERATIONAL_HOURS',
-        'APPOINTMENT_SLOT_DURATION',
-        'UNAVAILABLE_HOURS',
-      ],
-    },
-    attributes: ['key', 'value'],
-  })
-  const settingsMap = settings.reduce((acc, curr) => {
-    acc[curr.key] = curr.value
-    return acc
-  }, {})
-
+module.exports.generateAppointments = async (date, availableSlots, settingsMap) => {
   const operationalHoursSplit = (settingsMap?.OPERATIONAL_HOURS || envOperationalHours).split('-')
 
   const start = operationalHoursSplit[0]
   const end = operationalHoursSplit[1]
   const unavailableHoursJSON = settingsMap?.UNAVAILABLE_HOURS ?
-    JSON.parse(settingsMap?.UNAVAILABLE_HOURS) :
+    settingsMap?.UNAVAILABLE_HOURS :
     []
 
   const unavailableHours = unavailableHoursJSON.map((time) => {
