@@ -43,7 +43,7 @@ Database design is as shown in this [dbdiagram.io diagram](https://dbdiagram.io/
 
 **`There should be admin route as well for more security but not enough time to implement it`**
 
-Other than the above [Note](#note) section, everything else is done (inclusive of additional requirements in the documentation) but just missing out on the cancel appointment and admin capabilities.
+Other than the above [Note](#note) section, everything else is done (inclusive of additional requirements in the documentation) except for admin capabilities (can be regarded as future enhancement).
 
 ## Rules
 - each appointment slot is 30 minutes long
