@@ -68,3 +68,11 @@ Other than the above [Note](#note) section, everything else is done (inclusive o
 ### Advanced
 1. implement functionality to set days off
 2. allow setting unavailable hours within operation days
+
+## Usage:
+Already have everything setup properly with the pre scripts and dev script
+
+```
+npm install
+npm run dev
+```
