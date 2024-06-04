@@ -1,10 +1,7 @@
-const { DataTypes, Sequelize } = require('sequelize')
+import { DataTypes, Sequelize, QueryInterface } from 'sequelize'
 
 module.exports = {
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  up: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  up: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.createTable('Settings', {
       id: {
         type: DataTypes.UUID,
@@ -22,20 +19,19 @@ module.exports = {
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
+        // @ts-ignore
         defaultValue: Sequelize.NOW,
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
+        // @ts-ignore
         defaultValue: Sequelize.NOW,
       },
     }, { transaction })
   }),
 
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  down: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  down: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.dropTable('Settings', { transaction })
   }),
 }

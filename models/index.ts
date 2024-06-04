@@ -1,13 +1,13 @@
-const Users = require('./users')
-const UserAppointments = require('./userAppointments')
-const Appointments = require('./appointments')
-const Settings = require('./settings')
-const db = require('./db')
+import Users from './users'
+import UserAppointments from './userAppointments'
+import Appointments from './appointments'
+import Settings from './settings'
+import db from './db'
 
 Users.belongsToMany(Appointments, { through: UserAppointments, foreignKey: 'user_id' })
 Appointments.belongsToMany(Users, { through: UserAppointments, foreignKey: 'appointment_id' })
 
-module.exports = {
+export {
   Users,
   UserAppointments,
   Appointments,

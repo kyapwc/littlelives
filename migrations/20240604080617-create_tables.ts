@@ -1,10 +1,7 @@
-const { DataTypes } = require('sequelize')
+import { DataTypes, QueryInterface } from 'sequelize'
 
 module.exports = {
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  up: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  up: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.createTable('Appointments', {
       id: {
         type: DataTypes.UUID,
@@ -95,10 +92,7 @@ module.exports = {
     }, { transaction })
   }),
 
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  down: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  down: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.dropTable('UserAppointments', { transaction })
     await queryInterface.dropTable('Users', { transaction })
     await queryInterface.dropTable('Appointments', { transaction })

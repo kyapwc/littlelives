@@ -1,10 +1,7 @@
-const { DataTypes, Sequelize } = require('sequelize')
+import { DataTypes, QueryInterface } from 'sequelize'
 
 module.exports = {
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  up: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  up: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.addColumn('Users', 'password', {
       type: DataTypes.STRING,
       allowNull: false,
@@ -14,11 +11,7 @@ module.exports = {
       allowNull: false,
     }, { transaction })
   }),
-
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  down: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  down: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.removeColumn('Users', 'password', { transaction })
     await queryInterface.removeColumn('Users', 'username', { transaction })
   }),

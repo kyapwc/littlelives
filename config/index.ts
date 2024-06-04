@@ -4,7 +4,7 @@ const APPOINTMENT_SLOT_DURATION = process.env.APPOINTMENT_SLOT_DURATION || 30
 const OPERATIONAL_HOURS = (process.env.OPERATIONAL_HOURS || '09:00-18:00').split('-')
 const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY || 'yapweichun'
 
-module.exports = {
+export {
   PORT,
   DATABASE_URL,
   APPOINTMENT_SLOT_DURATION,

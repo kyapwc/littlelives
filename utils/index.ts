@@ -1,48 +1,53 @@
-const dayjs = require('./dayjs')
-const { Settings } = require('../models')
-const {
-  OPERATIONAL_HOURS: envOperationalHours,
-  APPOINTMENT_SLOT_DURATION: envApptSlotDuration,
-} = require('../config')
+import dayjs from './dayjs'
+import {
+  OPERATIONAL_HOURS as envOperationalHours,
+  APPOINTMENT_SLOT_DURATION as envApptSlotDuration,
+} from '../config'
 
-/**
- * @typedef AppointmentObj
- * @property {string} date
- * @property {string} time
- * @property {number} available_slots
- */
+export type AppointmentObj = {
+  date: string;
+  time: string;
+  available_slots: number;
+}
+
+export type SettingsMap = {
+  APPOINTMENT_SLOT_DURATION: any,
+  OPERATIONAL_HOURS: any,
+  MAXIMUM_SLOTS_PER_APPOINTMENT: any,
+  UNAVAILABLE_HOURS: any,
+  DAYS_OFF: any,
+}
 
 /**
  * Check if new appointment clashes with existing appointment.
  *
  * This is just a auxiliary method to be used in a recursive method
- *
- * @param {AppointmentObj} existingAppointment
- * @param {AppointmentObj} newAppointment
- * @param {object} setting
- * @returns {boolean}
  */
-const isConflict = (existingAppointment, newAppointment, setting) => {
+const isConflict = (
+  existingAppointment: AppointmentObj,
+  newAppointment: AppointmentObj,
+  setting: number,
+): boolean => {
   const existingDateTime = dayjs(`${existingAppointment.date} ${existingAppointment.time}`)
   const newDateTime = dayjs(`${newAppointment.date} ${newAppointment.time}`)
 
   return (
-    existingDateTime.isBefore(newDateTime.add(setting || envApptSlotDuration, 'minutes')) &&
-      newDateTime.isBefore(existingDateTime.add(setting || envApptSlotDuration, 'minutes'))
+    existingDateTime.isBefore(newDateTime.add(setting || Number(envApptSlotDuration), 'minutes')) &&
+      newDateTime.isBefore(existingDateTime.add(setting || Number(envApptSlotDuration), 'minutes'))
   )
 }
 
 /**
  * Recursive function to iterate through the original appointments array and calls `isConflict`.
  *
- * @param {AppointmentObj} newAppointment
- * @param {number} index
- * @param {Array<AppointmentObj>} appointments
- * @returns {boolean}
- *
  * @see `isConflict`
  */
-module.exports.validateAppointment = (newAppointment, index = 0, appointments, setting) => {
+const validateAppointment = (
+  newAppointment: AppointmentObj,
+  index: number = 0,
+  appointments: Array<AppointmentObj>,
+  setting: number,
+): boolean => {
   if (index === appointments.length) {
     appointments.push(newAppointment)
     return true;
@@ -53,7 +58,7 @@ module.exports.validateAppointment = (newAppointment, index = 0, appointments, s
     return false;
   }
 
-  return this.validateAppointment(newAppointment, index + 1, appointments, setting);
+  return validateAppointment(newAppointment, index + 1, appointments, setting);
 }
 
 /**
@@ -63,7 +68,11 @@ module.exports.validateAppointment = (newAppointment, index = 0, appointments, s
  * @param {number} availableSlots
  * @returns {AppointmentObj}
  */
-module.exports.generateAppointments = async (date, availableSlots, settingsMap) => {
+const generateAppointments = async (
+  date: string,
+  availableSlots: number,
+  settingsMap: SettingsMap,
+): Promise<AppointmentObj[]> => {
   const operationalHoursSplit = (settingsMap?.OPERATIONAL_HOURS || envOperationalHours).split('-')
 
   const start = operationalHoursSplit[0]
@@ -72,7 +81,7 @@ module.exports.generateAppointments = async (date, availableSlots, settingsMap) 
     settingsMap?.UNAVAILABLE_HOURS :
     []
 
-  const unavailableHours = unavailableHoursJSON.map((time) => {
+  const unavailableHours: Array<{ start: string; end: string; }> = unavailableHoursJSON.map((time: string) => {
     const splitTime = time.split('-')
 
     return {
@@ -87,20 +96,20 @@ module.exports.generateAppointments = async (date, availableSlots, settingsMap) 
   const startTime = dayjs(date).set('hour', startHour).set('minute', startMinute)
   const endTime = dayjs(date).set('hour', endHour).set('minute', endMinute)
 
-  const appointments = []
+  const appointments: Array<AppointmentObj> = []
   let currentTime = startTime
 
   while (currentTime.isBefore(endTime)) {
     const isUnavailable = unavailableHours.some(({ start, end }) => {
       const [startHour, startMinute] = start.split(':');
       const [endHour, endMinute] = end.split(':');
-      const unavailableStartTime = dayjs(date).set('hour', startHour).set('minute', startMinute);
-      const unavailableEndTime = dayjs(date).set('hour', endHour).set('minute', endMinute);
+      const unavailableStartTime = dayjs(date).set('hour', Number(startHour)).set('minute', Number(startMinute));
+      const unavailableEndTime = dayjs(date).set('hour', Number(endHour)).set('minute', Number(endMinute));
       return currentTime.isBetween(unavailableStartTime, unavailableEndTime, 'hour', '[]');
     });
 
     if (!isUnavailable) {
-      const appointmentData = {
+      const appointmentData: AppointmentObj = {
         date: currentTime.format('YYYY-MM-DD'),
         time: currentTime.format('HH:mm'),
         available_slots: availableSlots,
@@ -110,7 +119,11 @@ module.exports.generateAppointments = async (date, availableSlots, settingsMap) 
 
     currentTime = currentTime.add(settingsMap?.APPOINTMENT_SLOT_DURATION || envApptSlotDuration, 'minutes')
   }
-  console.log('appointments: ', appointments)
 
   return appointments
+}
+
+export {
+  generateAppointments,
+  validateAppointment,
 }

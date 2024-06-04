@@ -1,9 +1,9 @@
-const { Sequelize } = require('sequelize')
+import { Sequelize } from 'sequelize'
 
-const { DATABASE_URL } = require('../config')
+import { DATABASE_URL } from '../config'
 
 if (!DATABASE_URL?.length) throw new Error('Unable to connect to database, please input DATABASE_URL in .env file')
 
 const db = new Sequelize(DATABASE_URL)
 
-module.exports = db
+export default db

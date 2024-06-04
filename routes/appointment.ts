@@ -1,11 +1,13 @@
-const router = require('express').Router()
-const { Op } = require('sequelize')
-const uuid = require('uuid')
+import expressRouter from 'express'
+import { Op } from 'sequelize'
+import * as uuid from 'uuid'
 
-const { Appointments, UserAppointments, db } = require('../models')
-const dayjs = require('../utils/dayjs')
-const { validateAppointment, generateAppointments } = require('../utils')
-const verifyToken = require('../middleware/auth')
+import { Appointments, UserAppointments, db } from '../models'
+import dayjs from '../utils/dayjs'
+import { validateAppointment, generateAppointments, AppointmentObj } from '../utils'
+import verifyToken from '../middleware/auth'
+
+const router = expressRouter.Router()
 
 router.post('/generate', verifyToken, async (req, res) => {
   const transaction = await db.transaction()
@@ -80,7 +82,7 @@ router.post('/generate', verifyToken, async (req, res) => {
     await transaction.rollback()
     return res.status(500).json({
       success: true,
-      message: `Failed to generate appointments for given date: ${error.message}`,
+      message: `Failed to generate appointments for given date: ${(error as any).message}`,
     })
   }
 })
@@ -142,7 +144,7 @@ router.post('/', verifyToken, async (req, res) => {
       where: { date },
       raw: true,
       transaction,
-    })
+    }) as unknown as Array<AppointmentObj>
 
     const appointmentData = {
       date,
@@ -150,7 +152,7 @@ router.post('/', verifyToken, async (req, res) => {
       available_slots,
     }
 
-    const valid = await validateAppointment(
+    const valid = validateAppointment(
       appointmentData,
       0,
       appointments,
@@ -176,7 +178,7 @@ router.post('/', verifyToken, async (req, res) => {
     await transaction.rollback()
     return res.status(500).json({
       success: true,
-      message: `Failed to generate appointment for provided data: ${error.message}`,
+      message: `Failed to generate appointment for provided data: ${(error as any).message}`,
     })
   }
 })
@@ -185,9 +187,9 @@ router.get('/', verifyToken, async (req, res) => {
   try {
     const { query } = req
 
-    const date = query.date
+    const date = query?.date?.length ? String(query?.date) : undefined
 
-    if (!dayjs(date).isValid()) {
+    if (!date || !dayjs(date).isValid()) {
       return res.status(500).json({ success: false, message: 'Invalid date provided' })
     }
 
@@ -205,7 +207,7 @@ router.get('/', verifyToken, async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: true,
-      message: `Failed to get appointments for specified date: ${error.message}`,
+      message: `Failed to get appointments for specified date: ${(error as any).message}`,
     })
   }
 })
@@ -275,7 +277,7 @@ router.post('/book', verifyToken, async (req, res) => {
     await transaction.rollback()
     return res.status(500).json({
       success: false,
-      message: `Failed to book appointment due to error: ${error.message}`,
+      message: `Failed to book appointment due to error: ${(error as any).message}`,
     })
   }
 })
@@ -318,12 +320,12 @@ router.delete('/:id', verifyToken, async (req, res) => {
       message: 'Successfully cancelled appointment'
     })
   } catch (error) {
-    await transaction.destroy()
+    await transaction.rollback()
     return res.status(500).json({
       success: false,
-      message: `Failed to cancel appointment due to error: ${error.message}`,
+      message: `Failed to cancel appointment due to error: ${(error as any).message}`,
     })
   }
 })
 
-module.exports = router
+export default router

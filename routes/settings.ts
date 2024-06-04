@@ -1,7 +1,9 @@
-const router = require('express').Router()
-const { Settings } = require('../models')
+import expressRouter from 'express'
+import { Settings } from '../models'
 
-const verifyToken = require('../middleware/auth')
+import verifyToken from '../middleware/auth'
+
+const router = expressRouter.Router()
 
 router.put('/:key', verifyToken, async (req, res) => {
   const { key, value } = req.body
@@ -43,4 +45,4 @@ router.get('/', verifyToken, async (_, res) => {
   })
 })
 
-module.exports = router
+export default router

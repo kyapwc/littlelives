@@ -1,10 +1,12 @@
-const router = require('express').Router()
-const { Op } = require('sequelize')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+import expressRouter from 'express'
+import { Op } from 'sequelize'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
-const { Users } = require('../models')
-const { AUTH_SECRET_KEY } = require('../config')
+import { Users } from '../models'
+import { AUTH_SECRET_KEY } from '../config'
+
+const router = expressRouter.Router()
 
 router.post('/register', async (req, res) => {
   try {
@@ -47,7 +49,7 @@ router.post('/register', async (req, res) => {
     console.log('error: ', error)
     return res.status(500).json({
       success: false,
-      message: `Failed to register new user, ${error.message}`,
+      message: `Failed to register new user, ${(error as any).message}`,
     })
   }
 })
@@ -56,7 +58,14 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await Users.findOne({ username });
+    if (!username?.length || !password?.length) {
+      return res.status(500).json({
+        success: false,
+        message: 'Body malformed, please check and provide username + password',
+      });
+    }
+
+    const user = await Users.findOne({ where: { username } });
 
     if (!user) {
       return res.status(401).json({ error: 'Authentication failed' });
@@ -72,8 +81,8 @@ router.post('/login', async (req, res) => {
     });
     return res.status(200).json({ success: true, token });
   } catch (error) {
-    return res.status(500).json({ success: false, message: `Login failed, ${error.message}` });
+    return res.status(500).json({ success: false, message: `Login failed, ${(error as any).message}` });
   }
 });
 
-module.exports = router
+export default router

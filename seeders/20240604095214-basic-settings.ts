@@ -3,7 +3,8 @@
 // MAXIMUM_SLOTS_PER_APPOINTMENT=5
 // DAYS_OFF=[date, date, date]
 // UNAVAILABLE_HOURS=[11:00-12:00, 13:00-15:00]
-const { v4: uuidv4 } = require('uuid')
+import { QueryInterface } from 'sequelize'
+import { v4 as uuidv4 } from 'uuid'
 
 const settings = [
   {
@@ -29,10 +30,7 @@ const settings = [
 ]
 
 module.exports = {
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  up: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+  up: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     const data = settings.map((setting) => ({
       id: uuidv4(),
       ...setting,
@@ -42,11 +40,7 @@ module.exports = {
 
     return queryInterface.bulkInsert('Settings', data, { transaction })
   }),
-
-  /**
-   * @param {import('sequelize').QueryInterface} queryInterface
-   */
-  down: async (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
-    await queryInterface.bulkDelete('Settings', null, { transaction })
+  down: async (queryInterface: QueryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
+    await queryInterface.bulkDelete('Settings', {}, { transaction })
   }),
 }

@@ -1,14 +1,16 @@
-const jwt = require('jsonwebtoken')
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
 
-const { AUTH_SECRET_KEY } = require('../config')
-const { Users, Settings } = require('../models')
+import { AUTH_SECRET_KEY } from '../config'
+import { Users, Settings } from '../models'
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')
 
   if (!token) return res.status(401).json({ success: false, message: 'Access Denied' })
   try {
-    const decoded = jwt.verify(token, AUTH_SECRET_KEY)
+    const decoded = jwt.verify(token, AUTH_SECRET_KEY) as jwt.JwtPayload
+
     const user = await Users.findOne({
       where: { id: decoded.id },
       attributes: ['id', 'username', 'first_name', 'last_name'],
@@ -25,7 +27,8 @@ const verifyToken = async (req, res, next) => {
         ],
       },
       attributes: ['key', 'value'],
-    })
+      raw: true,
+    }) as unknown as Array<{ key: string; value: string }>
 
     // attach settings to the req.locals for later usage
     const settingsMap = settings.reduce((acc, curr) => {
@@ -35,7 +38,7 @@ const verifyToken = async (req, res, next) => {
         acc[curr.key] = curr.value
       }
       return acc
-    }, {})
+    }, {} as Record<string, any>)
 
     res.locals.user = user
     res.locals.settings = settingsMap
@@ -49,4 +52,4 @@ const verifyToken = async (req, res, next) => {
   }
 }
 
-module.exports =  verifyToken
+export default verifyToken

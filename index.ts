@@ -1,13 +1,13 @@
 require('dotenv').config()
-const express = require('express')
-const bodyParser = require('body-parser')
+import express from 'express'
+import bodyParser from 'body-parser'
 
-const appointments = require('./routes/appointment')
-const settings = require('./routes/settings')
-const users = require('./routes/users')
-const { db } = require('./models')
+import appointments from './routes/appointment'
+import settings from './routes/settings'
+import users from './routes/users'
+import { db } from './models'
 
-const app = express()
+const app: express.Express = express()
 const port = process.env.PORT
 
 app.use(bodyParser.json())

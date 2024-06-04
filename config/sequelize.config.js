@@ -1,4 +1,6 @@
-{
+require('ts-node/register')
+
+module.exports = {
   "development": {
     "username": "",
     "password": null,
