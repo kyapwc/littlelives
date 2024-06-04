@@ -11,7 +11,7 @@ const verifyToken = async (req, res, next) => {
     const decoded = jwt.verify(token, AUTH_SECRET_KEY)
     const user = await Users.findOne({
       where: { id: decoded.id },
-      attributes: ['username', 'first_name', 'last_name'],
+      attributes: ['id', 'username', 'first_name', 'last_name'],
     })
 
     const settings = await Settings.findAll({
