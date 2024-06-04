@@ -45,11 +45,11 @@ Other than the above [Note](#note) section, everything else is done (inclusive o
     - meaning weekends are not available
 - prevent double bookings for the same slot
 
-## Route /appointments { query: { date: '2024-06-06' } }
+## Route /appointments `{ query: { date: '2024-06-06' } }`
 - should return appointments that are available on 2024-06-06
 
 
-## Route /appointments/book { body: { appointmentId } }
+## Route /appointments/book `{ body: { appointmentId } }`
 - should validate slot is available
 - available slot should be deducted upon appointment made successfully
 
