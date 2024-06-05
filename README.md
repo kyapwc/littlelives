@@ -7,7 +7,7 @@ Documentation for the task requirements can be found [here](https://docs.google.
 > I have added a new eraser.io diagram and markdown explanation separately available [here](https://app.eraser.io/workspace/X3g7EWHnO6TTR1Qv9Pq5?origin=share). Please feel free to read through it to understand my thought process.
 
 ## API Diagram
-API Diagram produced using [eraser.io](https://eraser.io).
+API Diagram produced using [eraser.io](https://eraser.io). But do please head over to the [eraser.io diagram](https://app.eraser.io/workspace/X3g7EWHnO6TTR1Qv9Pq5?origin=share) for more detailed information.
 
 ![API Diagram Image](https://raw.githubusercontent.com/kyapwc/littlelives/master/.assets/eraser_diagram.png)
 
