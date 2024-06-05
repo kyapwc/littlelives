@@ -6,6 +6,11 @@ Documentation for the task requirements can be found [here](https://docs.google.
 > [!CAUTION]
 > I have added a new eraser.io diagram and markdown explanation separately available [here](https://app.eraser.io/workspace/X3g7EWHnO6TTR1Qv9Pq5?origin=share). Please feel free to read through it to understand my thought process.
 
+## API Diagram
+API Diagram produced using [eraser.io](https://eraser.io).
+
+![API Diagram Image](https://raw.githubusercontent.com/kyapwc/littlelives/master/.assets/eraser_diagram.png)
+
 <a id="note"></a>
 ## Note:
 I started the project in Javascript and by the time I finished it at 7:20PM (I chose 3:30pm start time and 4 hour timeslot = 7:30pm and wanted to take this time to document the project instead of converting to typescript), I did not have time to convert the project to typescript which is a huge oversight. Apologies on this as I did not read the `Language` specified in the requirements (which is deeply regretable).
